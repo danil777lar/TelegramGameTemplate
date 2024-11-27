@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
+    <title>Unity WebGL Player | VergilyDreams</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -21,7 +21,7 @@
       <div id="unity-footer" style="display: none;">
         <div id="unity-webgl-logo"></div>
         <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">{{{ PRODUCT_NAME }}}</div>
+        <div id="unity-build-title">VergilyDreams</div>
       </div>
     </div>
     <script>
@@ -33,58 +33,69 @@
       var warningBanner = document.querySelector("#unity-warning");
 
       var MyGameInstance = null;
-      let tg_bot = window.Telegram.WebApp;
-      tg_bot.expand();
-      let user_id = "-1"
+      let user_id = "1"
       let first_name = "test";
 
-      if (tg_bot.initDataUnsafe.user != null)
+      if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp && window.Telegram.WebApp.initData && window.Telegram.WebApp.initData.length > 0) 
       {
+        console.log("Launched from Telegram Web App");
+
+        let tg_bot = window.Telegram.WebApp;
+        tg_bot.expand();
+
         user_id = tg_bot.initDataUnsafe.user.id;
         first_name = tg_bot.initDataUnsafe.user.first_name;
+        tg_bot.isClosingConfirmationEnabled = true;
+      }
+      else
+      {
+        console.log("Launched from browser");
       }
 
-      tg_bot.isClosingConfirmationEnabled = true;
-
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
+      function unityShowBanner(msg, type) 
+      {
+        function updateBannerVisibility() 
+        {
           warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
+
         var div = document.createElement('div');
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
+
+        if (type == 'error') 
+        {
+          div.style = 'background: red; padding: 10px;';
+        }
+        else 
+        {
           if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
+          setTimeout(function() 
+          {
             warningBanner.removeChild(div);
             updateBannerVisibility();
           }, 5000);
         }
+
         updateBannerVisibility();
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
-      var config = {
-        dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
-        frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
-        codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
-#if MEMORY_FILENAME
-        memoryUrl: buildUrl + "/{{{ MEMORY_FILENAME }}}",
-#endif
-#if SYMBOLS_FILENAME
-        symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
-#endif
+      var loaderUrl = buildUrl + "/VergilyDreams.loader.js";
+      var config = 
+      {
+        dataUrl: buildUrl + "/VergilyDreams.data",
+        frameworkUrl: buildUrl + "/VergilyDreams.framework.js",
+        codeUrl: buildUrl + "/VergilyDreams.wasm",
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "{{{ COMPANY_NAME }}}",
-        productName: "{{{ PRODUCT_NAME }}}",
-        productVersion: "{{{ PRODUCT_VERSION }}}",
+        companyName: "DefaultCompany",
+        productName: "VergilyDreams",
+        productVersion: "0.1.0",
         showBanner: unityShowBanner,
       };
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) 
+      {
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
@@ -94,24 +105,23 @@
         canvas.style.width = window.innerWidth + 'px';
         canvas.style.height = window.innerHeight + 'px';
 
-      } else {
-
+      } else 
+      {
         canvas.style.width = "540px";
         canvas.style.height = "960px";
       }
 
-#if BACKGROUND_FILENAME
-      canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
-#endif
       loadingBar.style.display = "block";
 
       var script = document.createElement("script");
       script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
+      script.onload = () => 
+      {
+        createUnityInstance(canvas, config, (progress) => 
+        {
           progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-
+        }).then((unityInstance) => 
+        {
           var location = window.location;
           var path = location.origin + location.pathname;
 
@@ -120,10 +130,12 @@
           MyGameInstance.SendMessage("Data Service", "SetUserId", user_id.toString());
           MyGameInstance.SendMessage("Data Service", "SetFirstName", first_name);
           loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
+          fullscreenButton.onclick = () => 
+          {
             unityInstance.SetFullscreen(1);
           };
-        }).catch((message) => {
+        }).catch((message) => 
+        {
           alert(message);
         });
       };
